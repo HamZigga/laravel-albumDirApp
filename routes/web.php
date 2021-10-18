@@ -17,9 +17,6 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
 
 Route::get('/album/find', function () {
     return view('albumFind');
@@ -31,14 +28,14 @@ Route::get('/album/create', function () {
 
 
 
-Route::get('/', 'App\Http\Controllers\ApiController@allData')->name('home');
+Route::get('/', 'App\Http\Controllers\AlbumController@allData')->name('home');
 
-Route::get('/album/{id}/update', 'App\Http\Controllers\ApiController@updateAlbum')->name('specificAlbum-update');
-Route::get('/album/{id}/delete', 'App\Http\Controllers\ApiController@deleteAlbum')->name('specificAlbum-delete');
+Route::get('/album/{id}/update', 'App\Http\Controllers\AlbumController@updateAlbum')->middleware(['auth'])->name('specificAlbum-update');
+Route::get('/album/{id}/delete', 'App\Http\Controllers\ApiController@deleteAlbum')->middleware(['auth'])->name('specificAlbum-delete');
 
 Route::get('/album/{id}', 'App\Http\Controllers\ApiController@showSpecificAlbum')->name('specificAlbum');
 
-Route::post('/album/{id}/update/submit', 'App\Http\Controllers\ApiController@updateAlbumSubmit')->name('specificAlbum-update-submit');
+Route::post('/album/{id}/update/submit', 'App\Http\Controllers\AlbumController@updateAlbumSubmit')->name('specificAlbum-update-submit');
 Route::post('/album/create', 'App\Http\Controllers\ApiController@getApiData')->name('albumFind-form');
 
 Route::post('/album/create/submit', 'App\Http\Controllers\ApiController@submit')->name('albumCreate-submit');
