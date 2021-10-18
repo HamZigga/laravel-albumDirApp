@@ -41,6 +41,6 @@ Route::get('/album/{id}', 'App\Http\Controllers\ApiController@showSpecificAlbum'
 Route::post('/album/{id}/update/submit', 'App\Http\Controllers\ApiController@updateAlbumSubmit')->name('specificAlbum-update-submit');
 Route::post('/album/create', 'App\Http\Controllers\ApiController@getApiData')->name('albumFind-form');
 
-Route::post('/album/create/submit', 'App\Http\Controllers\ApiController@submit')->name('albumCreate-form');
+Route::post('/album/create/submit', 'App\Http\Controllers\ApiController@submit')->name('albumCreate-submit');
 
 require __DIR__.'/auth.php';

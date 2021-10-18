@@ -2,15 +2,22 @@
 
 namespace App\Http\Controllers;
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7;
+use GuzzleHttp\Exception\ClientException;
 use App\Models\Album;
 use Illuminate\Http\Request;
+use App\Http\Requests\AlbumRequest;
 use Illuminate\Support\Facades\Auth;
+
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
 
 use SimpleXMLElement;
 
 class ApiController extends Controller
 {      
-        public function submit(Request $request) {
+        public function submit(AlbumRequest $request) {
 
             $albumCopy = new Album();
             $albumCopy->user_id = Auth::user()->id;
@@ -18,71 +25,104 @@ class ApiController extends Controller
             $albumCopy->album = $request->input('album');
             $albumCopy->img = $request->input('img');
             $albumCopy->info = $request->input('info');
+            
             $albumCopy->save();
 
-            return redirect()->route('home')->with('success', "Албом был добавлен");
+            return redirect()->route('home')->with('success', "Альбом был добавлен");
+            
         }
         
     public function getApiData(Request $request) {
+        $patternForDeleteLinks = '/<a([\s\S]+)?>([\s\S]+)?<\/a>/i';
+        $apiKey = "488a0683f926f90cdc3a2f16a2355e6a";
+
         $albumCopy = new Album();
         $albumCopy->user_id = Auth::user()->id;
-        $artist = strtolower($request->input('artist'));
-        $album = strtolower($request->input('album'));
+        
+        $artist = strtolower(strip_tags($request->input('artist')));
+        $album = strtolower(strip_tags($request->input('album')));
+
         $client = new Client();
-        $res = $client->request('POST', 'https://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=488a0683f926f90cdc3a2f16a2355e6a&artist='.$artist.'&album='.$album, [
-            'form_params' => [
-                'client_id' => 'test_id',
-                'secret' => 'test_secret',
-            ]
-        ]);
-        $result= $res->getBody();
-        $result = new SimpleXMLElement($result);
-        if (isset($result->album[0]->artist)){
-            $artist = strval($result->album[0]->artist);
+        try{
+            $client->request('POST', 'https://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key='.$apiKey.'&artist='.$artist.'&album='.$album);
         }
-        if (isset($result->album[0]->name)){
-            $album = strval($result->album[0]->name);
+        catch(ClientException  $exception){
+            
+            return redirect()->route('albumFind')->with('errorMessage', "Неверно введен Исполнитель или Альбом");
         }
-        $image = "";
+        $client = $client->request('POST', 'https://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key='.$apiKey.'&artist='.$artist.'&album='.$album);
+        $result = new SimpleXMLElement($client->getBody());
+        
+        $artist = strval($result->album[0]->artist);
+        $album = strval($result->album[0]->name);
+
         $image = strval($result->album[0]->image[3]);
-        $wiki = '';
-        $pattern = '/<a([\s\S]+)?>([\s\S]+)?<\/a>/i';
-    
-        if (isset($result->album[0]->wiki[0]->summary)){
-            $wiki = preg_replace($pattern, "", $result->album[0]->wiki[0]->summary);
+        if (empty($image)){
+            $image = "https://via.placeholder.com/300.png";
         }
+        $info = "";
+        
+        if (isset($result->album[0]->wiki[0]->summary)){
+            $info = preg_replace($patternForDeleteLinks, "", $result->album[0]->wiki[0]->summary);
+        }
+
         $albumCopy->artist = $artist;
         $albumCopy->album = $album;
-        $albumCopy->image = $image;
-        $albumCopy->wiki = $wiki;
-        return view('albumCreate',$albumCopy);
-        
+        $albumCopy->img = $image;
+        $albumCopy->info = $info;
+
+        return view('albumCreate', ['date' => $albumCopy]);
     }
 
     public function allData() {
         $albumCopy = new Album();
-        return view('home', ['date' => $albumCopy->orderBy('id', 'desc')->get()]);
+        $albums = DB::table('albums');
+        return view('home', [
+            'albums' => DB::table('albums')->orderBy('id', 'desc')->paginate(16)
+        ]);
+
+        
     }  
 
     public function showSpecificAlbum($id) {
-        $albumCopy = new Album();
-        return view('albumSpecific', ['date' => $albumCopy->find($id)]);
+        try {
+            $albumCopy = new Album();
+            Album::where('id',$id)->firstOrFail();
+            return view('albumSpecific', ['date' => $albumCopy->find($id)]);
+        }
+        catch(Exception $exception){
+            return $exception.getMessage();
+        }
     }
     
     public function updateAlbum($id){
-        $albumCopy = new Album();
-        return view('albumUpdate', ['date' => $albumCopy->find($id)]);
+        try {
+            $albumCopy = new Album();
+            Album::where('id',$id)->firstOrFail();
+            return view('albumUpdate', ['date' => $albumCopy->find($id)]);
+        }
+        catch(Exception $exception){
+            return $exception.getMessage();
+        }
     }
 
     public function deleteAlbum($id){
-        $albumCopy = new Album();
-        $albumCopy->find($id)->delete();
-        return redirect()->route('home', $id)->with('success', "Альбом был Удален");
+        try {
+            $albumCopy = new Album();
+            Album::where('id',$id)->firstOrFail();
+            $albumCopy->find($id)->delete();
+            return redirect()->route('home', $id)->with('success', "Альбом был Удален");
+        }
+        catch(Exception $exception){
+            return $exception.getMessage();
+        }
     }
 
-    public function updateAlbumSubmit($id, Request $request) {
-       
+    public function updateAlbumSubmit($id, AlbumRequest $request) {
+        try {
         $albumCopy = new Album();
+        Album::where('id',$id)->firstOrFail();
+
         $albumCopy = $albumCopy->find($id);
         $albumCopy->user_id = Auth::user()->id;
         $albumCopy->artist = $request->input('artist');
@@ -93,6 +133,15 @@ class ApiController extends Controller
         $albumCopy->save();
 
         return redirect()->route('specificAlbum', $id)->with('success', "Альбом был обновлен");
+        }
+        catch(Exception $exception){
+            return $exception.getMessage();
+        }
+
+        
+        
     }
+
+    
 }
 

@@ -1,17 +1,17 @@
 @extends ('layouts.app')
 
 @section('title')
-    Добавление альбома
+    Редактирование альбома
 @endsection
 
 @section('content')
-    <h1>Добавление альбома</h1>
+    <h1>Редактирование альбома</h1>
 
     
-
+    <img src="{{ $date->img }}" alt="album preview" style="width:120px; height:120px;">
     <form action="{{ route('specificAlbum-update-submit', $date->id) }}" method="POST">
         @csrf 
-        <img src="{{ $date->img }}" alt="album preview" style="width:120px; height:120px;">
+    
         <div class="form-group">
             <label for="img">Введите ссылку на изображение</label>
             <input class="form-control" type="text" name="img" placeholder="Ссылка на изображение" id="img" value="{{ $date->img }}">

@@ -6,9 +6,7 @@
 
 @section('content')
     <h1>Поиск доп инф</h1>
-
     
-
     <form action="{{ route('albumFind-form') }}" method="POST">
         @csrf 
 

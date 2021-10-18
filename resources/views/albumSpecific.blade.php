@@ -1,7 +1,7 @@
 @extends ('layouts.app')
 
 @section('title')
-    Создание альбома
+    Описание альбома
 @endsection
 
 @section('content')

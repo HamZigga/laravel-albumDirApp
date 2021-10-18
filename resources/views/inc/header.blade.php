@@ -32,6 +32,10 @@
                         </x-slot>
 
                         <x-slot name="content">
+                            
+                            <x-dropdown-link :href="route('albumFind')">
+                                    Создать Альбом
+                            </x-dropdown-link>
                             <!-- Authentication -->
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -42,12 +46,8 @@
                                     {{ __('Log Out') }}
                                 </x-dropdown-link>
                             </form>
-                                <x-dropdown-link :href="route('albumFind')">
-                                    Создать Альбом
-                                </x-dropdown-link>
-                                <x-dropdown-link :href="route('albumFind')">
-                                    Альбомы добавленные мной
-                                </x-dropdown-link>
+                                
+                                
                         </x-slot>
                     </x-dropdown>
                 </div>
