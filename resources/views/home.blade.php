@@ -1,11 +1,11 @@
 @extends ('layouts.app')
 
 @section('title')
-    Home page
+    Главная страница
 @endsection
 
 @section('content')
-    <h2>Album list</h2>
+    <h2>Список альбомов</h2>
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3">
     @foreach($albums as $el)
         <div class="col">

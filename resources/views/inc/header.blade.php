@@ -33,8 +33,11 @@
 
                         <x-slot name="content">
                             
-                            <x-dropdown-link :href="route('albumFind')">
+                            <x-dropdown-link :href="route('albumCreate')">
                                     Создать Альбом
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('profile')">
+                                    Профиль
                             </x-dropdown-link>
                             <!-- Authentication -->
                             <form method="POST" action="{{ route('logout') }}">

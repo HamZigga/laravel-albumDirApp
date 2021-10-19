@@ -26,6 +26,7 @@ class AlbumRequest extends FormRequest
         return [
             'artist' => 'required|min:1|max:255',
             'album' => 'required|min:1|max:255',
+            'img' => 'required|min:1|max:200',
             'info' => 'required|min:1|max:2500'
         ];
     }
@@ -34,6 +35,7 @@ class AlbumRequest extends FormRequest
         return [
             'artist.required' => 'Поле исполнителя является обязательным',
             'album.required' => 'Поле альбома является обязательным',
+            'img.required' => 'Поле Картинки является обязательным',
             'info.required' => 'Поле информации является обязательным'
             
         ];

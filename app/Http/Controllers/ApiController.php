@@ -9,9 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\AlbumRequest;
 use Illuminate\Support\Facades\Auth;
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\DB;
-
+use Exception;
 use SimpleXMLElement;
 
 class ApiController extends Controller
@@ -73,30 +71,11 @@ class ApiController extends Controller
         return view('albumCreate', ['date' => $albumCopy]);
     }
 
-    public function showSpecificAlbum($id) {
-        try {
-            $albumCopy = new Album();
-            Album::where('id',$id)->firstOrFail();
-            return view('albumSpecific', ['date' => $albumCopy->find($id)]);
-        }
-        catch(Exception $exception){
-            return $exception.getMessage();
-        }
-    }
+    
     
     
 
-    public function deleteAlbum($id){
-        try {
-            $albumCopy = new Album();
-            Album::where('id',$id)->firstOrFail();
-            $albumCopy->find($id)->delete();
-            return redirect()->route('home', $id)->with('success', "Альбом был Удален");
-        }
-        catch(Exception $exception){
-            return $exception.getMessage();
-        }
-    }
+    
 
 
     
