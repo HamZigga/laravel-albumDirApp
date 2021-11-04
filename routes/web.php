@@ -13,35 +13,75 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+require __DIR__ . '/auth.php';
+
 Route::get('/', function () {
     return view('home');
 })->name('home');
 
+Route::get('/', 'App\Http\Controllers\AlbumController@index')
+    ->name('home');
 
-Route::get('/album/find', function () {
-    return view('albumFind');
-})->middleware(['auth'])->name('albumFind');
+Route::group(
+    [
+        'middleware' => ['auth']
+    ], function () {
 
-Route::get('/album/create', function () {
-    return view('albumCreate');
-})->middleware(['auth'])->name('albumCreate');
+    Route::get('/profile', function () {
+        return view('profile');
+    })->name('profile');
 
-Route::get('/profile', function () {
-    return view('profile');
-})->middleware(['auth'])->name('profile');
+    Route::group(
+        [
+            'prefix' => 'album',
+            'as' => 'album'
+        ], function () {
+
+        Route::get('/find', function () {
+            return view('albumFind');
+        })->name('Find');
+
+        Route::get('/create', function () {
+            return view('albumCreate');
+        })->name('Create');
+
+        Route::get('/{id}/update', 'App\Http\Controllers\AlbumController@edit')
+            ->name('Specific-update');
+
+        Route::get('/{id}/delete', 'App\Http\Controllers\AlbumController@delete')
+            ->name('Specific-delete');
+
+        Route::post('/{id}/update/submit', 'App\Http\Controllers\AlbumController@update')
+            ->name('Specific-update-submit');
+
+        Route::post('/create', 'App\Http\Controllers\ApiController@getAlbumApiData')
+            ->name('Find-form');
+
+        Route::post('/create/submit', 'App\Http\Controllers\AlbumController@store')
+            ->name('Create-submit');
+
+    }
+
+    );
+
+}
+);
+
+Route::group(
+    [
+        'prefix' => 'album',
+        'as' => 'album'
+    ], function () {
+    Route::get('/{id}', 'App\Http\Controllers\AlbumController@show')
+        ->name('Specific');
+}
+
+);
 
 
 
-Route::get('/', 'App\Http\Controllers\AlbumController@allData')->name('home');
 
-Route::get('/album/{id}/update', 'App\Http\Controllers\AlbumController@updateAlbum')->middleware(['auth'])->name('specificAlbum-update');
-Route::get('/album/{id}/delete', 'App\Http\Controllers\AlbumController@deleteAlbum')->middleware(['auth'])->name('specificAlbum-delete');
 
-Route::get('/album/{id}', 'App\Http\Controllers\AlbumController@showSpecificAlbum')->name('specificAlbum');
 
-Route::post('/album/{id}/update/submit', 'App\Http\Controllers\AlbumController@updateAlbumSubmit')->name('specificAlbum-update-submit');
-Route::post('/album/create', 'App\Http\Controllers\ApiController@getApiData')->name('albumFind-form');
 
-Route::post('/album/create/submit', 'App\Http\Controllers\ApiController@submit')->name('albumCreate-submit');
 
-require __DIR__.'/auth.php';
