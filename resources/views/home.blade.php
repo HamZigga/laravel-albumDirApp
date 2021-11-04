@@ -16,15 +16,15 @@
                     <p class="card-text">{{ $el->artist }}</p>
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="btn-group">
-                            <a href="{{ route('specificAlbum', $el->id) }}" ><button class="btn btn-sm btn-outline-secondary">Подробнее</button></a>
+                            <a href="{{ route('albumSpecific', $el->id) }}" ><button class="btn btn-sm btn-outline-secondary">Подробнее</button></a>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
         </div>
     @endforeach
-    
+
     </div>
     {{ $albums->links() }}
 @endsection

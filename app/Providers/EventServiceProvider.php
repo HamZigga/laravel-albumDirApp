@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Album;
+use App\Models\AlbumLog;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -27,6 +29,18 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+
+        Album::updated(function($albumCopy)
+        {
+            $albumLog = new AlbumLog();
+            $albumLog->user_id = auth()->user()->id;
+            $albumLog->album_id = $albumCopy->id;
+            $albumLog->artist = $albumCopy->artist;
+            $albumLog->album = $albumCopy->album;
+            $albumLog->img = $albumCopy->img;
+            $albumLog->info = $albumCopy->info;
+
+            $albumLog->save();
+        });
     }
 }

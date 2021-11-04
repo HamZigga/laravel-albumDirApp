@@ -31,7 +31,7 @@
                                 name="password"
                                 required autocomplete="current-password" />
             </div>
-
+            
             <!-- Remember Me -->
             <div class="block mt-4">
                 <label for="remember_me" class="inline-flex items-center">
@@ -39,14 +39,14 @@
                     <span class="ml-2 text-sm text-gray-600">Запомнить меня</span>
                 </label>
             </div>
-
+            
             <div class="flex items-center justify-end mt-4">
                 @if (Route::has('password.request'))
                     <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('password.request') }}">
                         Забыли пароль?
                     </a>
                 @endif
-
+                <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('register') }}">Еще нет учетной записи? Зарегистрироваться</a>
                 <x-button class="ml-3">
                     Войти
                 </x-button>
