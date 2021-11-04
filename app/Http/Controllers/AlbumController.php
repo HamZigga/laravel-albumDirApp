@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+
 use App\Models\Album;
-use App\Models\AlbumLog;
+
 use App\Http\Requests\AlbumRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
-use Exception;
+
 
 class AlbumController extends Controller
 {

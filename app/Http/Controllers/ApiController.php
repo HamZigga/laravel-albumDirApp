@@ -3,14 +3,11 @@
 namespace App\Http\Controllers;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\ClientException;
 use App\Models\Album;
 use Illuminate\Http\Request;
-use App\Http\Requests\AlbumRequest;
 use Illuminate\Support\Facades\Auth;
 
-use Exception;
 use SimpleXMLElement;
 
 class ApiController extends Controller
