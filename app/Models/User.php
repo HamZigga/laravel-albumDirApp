@@ -51,4 +51,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(AlbumLog::class);
     }
+
+    public function artist()
+    {
+        return $this->hasMany(AlbumLog::class);
+    }
+
+    public function artistLog()
+    {
+        return $this->hasMany(AlbumLog::class);
+    }
 }

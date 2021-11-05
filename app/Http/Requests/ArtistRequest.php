@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AlbumRequest extends FormRequest
+class ArtistRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,20 +25,14 @@ class AlbumRequest extends FormRequest
     {
         return [
             'artist' => 'required|min:1|max:255',
-            'album' => 'required|min:1|max:255',
             'img' => 'image|max:1990',
-            'info' => 'required|min:1|max:2500'
         ];
     }
 
     public function messages(){
         return [
             'artist.required' => 'Поле исполнителя является обязательным',
-            'album.required' => 'Поле альбома является обязательным',
             'img.image' => 'Поле картинки не является изображением',
-            'info.required' => 'Поле информации является обязательным',
-
-
         ];
     }
 }

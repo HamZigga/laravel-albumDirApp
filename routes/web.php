@@ -67,15 +67,52 @@ Route::group(
 
     );
 
+    Route::group(
+        [
+            'prefix' => 'artist',
+            'as' => 'artist'
+        ], function () {
+
+        Route::get('/find', function () {
+            return view('artistFind');
+        })->name('Find');
+
+        Route::get('/create', function () {
+            return view('artistCreate');
+        })->name('Create');
+
+        Route::get('/{id}/update', 'App\Http\Controllers\ArtistController@edit')
+            ->name('Specific-update');
+
+        Route::get('/{id}/delete', 'App\Http\Controllers\ArtistController@delete')
+            ->name('Specific-delete');
+
+        Route::post('/{id}/update/submit', 'App\Http\Controllers\ArtistController@update')
+            ->name('Specific-update-submit');
+
+        Route::post('/create', 'App\Http\Controllers\ApiController@getArtistApiData')
+            ->name('Find-form');
+
+        Route::post('/create/submit', 'App\Http\Controllers\ArtistController@store')
+            ->name('Create-submit');
+
+    }
+
+    );
+
 }
 );
 
 Route::group(
     [
-        'prefix' => 'album',
-        'as' => 'album'
+        'prefix' => 'artist',
+        'as' => 'artist'
     ], function () {
+    Route::get('/search', 'App\Http\Controllers\ArtistController@search')
+        ->name('search');
 
+    Route::get('/', 'App\Http\Controllers\ArtistController@index')
+        ->name('List');
 }
 
 );

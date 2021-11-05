@@ -2,41 +2,34 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Models\Album;
-
-use App\Http\Requests\AlbumRequest;
+use App\Models\Artist;
+use App\Http\Requests\ArtistRequest;
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 use Intervention\Image\ImageManagerStatic as Image;
 
-
-class AlbumController extends Controller
+class ArtistController extends Controller
 {
-
-    public function store(AlbumRequest $request)
+    public function store(ArtistRequest $request)
     {
 
         if (is_string($request->img_api)) {
-            $imgSource = $this->imageSave('albums', $request->img_api);
+            $imgSource = $this->imageSave('artists', $request->img_api);
         } else if (file_exists($request->file('img'))) {
-            $imgSource = $request->file('img')->store('albums', 'public');
+            $imgSource = $request->file('img')->store('artists', 'public');
         } else {
             $imgSource = 'stockAlbumImage.jpg';
         }
 
-        Album::create([
+        Artist::create([
             'user_id' => auth()->user()->id,
             'artist' => $request->input('artist'),
-            'album' => $request->input('album'),
             'img' => $imgSource,
-            'info' => $request->input('info'),
         ]);
 
-        return redirect()->route('home')->with('success', "Альбом был добавлен");
+        return redirect()->route('artistList')->with('success', "Исполнитель был добавлен");
     }
 
     public function imageSave($dir, $imgSource)
@@ -52,38 +45,35 @@ class AlbumController extends Controller
 
     public function search(Request $request)
     {
-        return view('search', ['albums' => Album::where('artist', 'LIKE', "%{$request->input('search')}%")
+        return view('artistsearch', ['artists' => Artist::where('artist', 'LIKE', "%{$request->input('search')}%")
             ->orderBy('id', 'desc')->get()]);
     }
 
     public function index()
     {
-        return view('home', ['albums' => Album::orderBy('id', 'desc')->paginate(5)]);
+        return view('artistList', ['artists' => Artist::orderBy('id', 'desc')->paginate(5)]);
     }
 
     public function edit($id)
     {
-        return view('albumUpdate', ['data' => Album::findOrFail($id)]);
+        return view('artistUpdate', ['data' => Artist::findOrFail($id)]);
     }
 
-    public function update($id, AlbumRequest $request)
+    public function update($id, ArtistRequest $request)
     {
         $previousImg = $request->hidden_img;
         if (file_exists($request->file('img'))) {
-
             if ($previousImg != 'stockAlbumImage.jpg') {
                 Storage::disk('public')->delete($previousImg);
             }
-            $imgSource = $request->file('img')->store('albums', 'public');
+            $imgSource = $request->file('img')->store('artists', 'public');
         } else {
             $imgSource = $previousImg;
         }
-        Album::findOrFail($id)->update([
+        Artist::findOrFail($id)->update([
             'user_id' => auth()->user()->id,
             'artist' => $request->input('artist'),
-            'album' => $request->input('album'),
             'img' => $imgSource,
-            'info' => $request->input('info'),
         ]);
 
         return redirect()->route('home', $id)->with('success', "Альбом был обновлен");
@@ -91,15 +81,11 @@ class AlbumController extends Controller
 
     public function delete($id)
     {
-        $albumCopy = Album::findOrFail($id);
-        $albumCopy->delete();
-        if ($albumCopy->img != 'stockAlbumImage.jpg') {
-            Storage::disk('public')->delete($albumCopy->img);
+        $artistCopy = Artist::findOrFail($id);
+        $artistCopy->delete();
+        if ($artistCopy->img != 'stockAlbumImage.jpg') {
+            Storage::disk('public')->delete($artistCopy->img);
         }
-        return redirect()->route('home', $id)->with('success', "Альбом был Удален");
+        return redirect()->route('artistList', $id)->with('success', "Альбом был Удален");
     }
-
-
 }
-
-

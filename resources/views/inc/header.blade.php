@@ -2,7 +2,7 @@
 
         <a href="{{ route('home') }}" class="my-0 mr-md-auto font-weight-normal h3">Album Directory</a>
         <div class="sm:flex sm:items-center sm:ml-6">
-            <a class="pr-5" href="{{ route('home') }}">Исполнители</a>
+            <a class="pr-5" href="{{ route('artistList') }}">Исполнители</a>
             <a class="pr-5" href="{{ route('home') }}">Альбомы</a>
         </div>
         @guest
@@ -22,6 +22,7 @@
             @else
             <div class="sm:flex sm:items-center sm:ml-6">
                 <a class="pr-5" href="{{ route('albumCreate') }}">Создать Альбом</a>
+                <a class="pr-5" href="{{ route('artistCreate') }}">Создать Исполнителя</a>
                     <x-dropdown align="right" width="48">
 
                         <x-slot name="trigger">
@@ -41,6 +42,9 @@
                             <x-dropdown-link :href="route('albumCreate')">
                                     Создать Альбом
                             </x-dropdown-link>
+                            <x-dropdown-link :href="route('artistCreate')">
+                                Создать Исполнителя
+                            </x-dropdown-link>
                             <x-dropdown-link :href="route('profile')">
                                     Профиль
                             </x-dropdown-link>
@@ -58,9 +62,7 @@
 
                         </x-slot>
                     </x-dropdown>
-                </div>
 
-            </div>
         </div>
     @endguest
 </div>
