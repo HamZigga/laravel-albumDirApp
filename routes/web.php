@@ -22,6 +22,9 @@ Route::get('/', function () {
 Route::get('/', 'App\Http\Controllers\AlbumController@index')
     ->name('home');
 
+Route::get('/search', 'App\Http\Controllers\AlbumController@search')
+    ->name('search');
+
 Route::group(
     [
         'middleware' => ['auth']
@@ -72,8 +75,7 @@ Route::group(
         'prefix' => 'album',
         'as' => 'album'
     ], function () {
-    Route::get('/{id}', 'App\Http\Controllers\AlbumController@show')
-        ->name('Specific');
+
 }
 
 );

@@ -1,6 +1,10 @@
 <div class="d-flex flex-md-row justify-content-between p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
-        
+
         <a href="{{ route('home') }}" class="my-0 mr-md-auto font-weight-normal h3">Album Directory</a>
+        <div class="sm:flex sm:items-center sm:ml-6">
+            <a class="pr-5" href="{{ route('home') }}">Исполнители</a>
+            <a class="pr-5" href="{{ route('home') }}">Альбомы</a>
+        </div>
         @guest
             @if (Route::has('login'))
                     <div class="sm:flex sm:items-center sm:ml-6">
@@ -19,7 +23,7 @@
             <div class="sm:flex sm:items-center sm:ml-6">
                 <a class="pr-5" href="{{ route('albumCreate') }}">Создать Альбом</a>
                     <x-dropdown align="right" width="48">
-                        
+
                         <x-slot name="trigger">
                             <button class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                                 <div>{{ Auth::user()->name }}</div>
@@ -33,7 +37,7 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            
+
                             <x-dropdown-link :href="route('albumCreate')">
                                     Создать Альбом
                             </x-dropdown-link>
@@ -50,8 +54,8 @@
                                     {{ __('Log Out') }}
                                 </x-dropdown-link>
                             </form>
-                                
-                                
+
+
                         </x-slot>
                     </x-dropdown>
                 </div>

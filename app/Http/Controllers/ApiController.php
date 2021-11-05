@@ -19,7 +19,7 @@ class ApiController extends Controller
         $apiKey = "488a0683f926f90cdc3a2f16a2355e6a";
 
         $albumCopy = new Album();
-        $albumCopy->user_id = Auth::user()->id;
+        $albumCopy->user_id = auth()->user()->id;
 
         $artist = strtolower(strip_tags($request->input('artist')));
         $album = strtolower(strip_tags($request->input('album')));
@@ -52,7 +52,7 @@ class ApiController extends Controller
         $albumCopy->img = $image;
         $albumCopy->info = $info;
 
-        return view('albumCreate', ['date' => $albumCopy]);
+        return view('albumCreate', ['data' => $albumCopy]);
     }
 
 }

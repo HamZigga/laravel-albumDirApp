@@ -18,7 +18,7 @@ class CreateAlbumLogsTable extends Migration
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
             $table->bigInteger('album_id')->unsigned();
-            $table->foreign('album_id')->references('id')->on('albums');
+            $table->foreign('album_id')->references('id')->on('albums')->onDelete('cascade');
             $table->string('artist');
             $table->string('album');
             $table->string('img');
