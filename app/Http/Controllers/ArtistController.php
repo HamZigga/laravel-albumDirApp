@@ -45,7 +45,7 @@ class ArtistController extends Controller
 
     public function search(Request $request)
     {
-        return view('artistsearch', ['artists' => Artist::where('artist', 'LIKE', "%{$request->input('search')}%")
+        return view('artistSearch', ['artists' => Artist::where('artist', 'LIKE', "%{$request->input('search')}%")
             ->orderBy('id', 'desc')->get()]);
     }
 
@@ -76,7 +76,7 @@ class ArtistController extends Controller
             'img' => $imgSource,
         ]);
 
-        return redirect()->route('home', $id)->with('success', "Альбом был обновлен");
+        return redirect()->route('artistList', $id)->with('success', "Исполнитель был обновлен");
     }
 
     public function delete($id)
@@ -86,6 +86,6 @@ class ArtistController extends Controller
         if ($artistCopy->img != 'stockAlbumImage.jpg') {
             Storage::disk('public')->delete($artistCopy->img);
         }
-        return redirect()->route('artistList', $id)->with('success', "Альбом был Удален");
+        return redirect()->route('artistList', $id)->with('success', "Исполнитель был Удален");
     }
 }

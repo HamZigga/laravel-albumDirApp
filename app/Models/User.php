@@ -54,11 +54,11 @@ class User extends Authenticatable
 
     public function artist()
     {
-        return $this->hasMany(AlbumLog::class);
+        return $this->hasMany(Artist::class);
     }
 
     public function artistLog()
     {
-        return $this->hasMany(AlbumLog::class);
+        return $this->hasMany(ArtistLog::class);
     }
 }

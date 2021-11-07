@@ -8,17 +8,17 @@
 
     <h1>Добавление альбома</h1>
     <a class="btn btn-primary" style="margin-bottom: 20px;" href="{{ route('albumFind') }}">Предзаполнение полей</a>
-    <img src="{{ $data->img  ?? old('img') ??  asset('/storage/stockAlbumImage.jpg' )  }}" alt="album preview"
+    <img src="{{ $data->img  ?? old('img_api') ??  asset('/storage/stockAlbumImage.jpg' )  }}" alt="album preview"
          style="width:120px; height:120px;">
 
     <form action="{{ route('albumCreate-submit') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
-        @if(isset($data->img))
+        @if(isset($data->img) || old('img_api') != null)
             <div class="form-group">
                 <label for="img_api">Ссылка на изображение</label>
                 <input class="form-control" type="text" name="img_api" placeholder="Ссылка на изображение" id="img_api"
-                       value="{{ old('img')  ?? $data->img}}" readonly>
+                       value="{{ old('img_api')  ?? $data->img}}" readonly>
             </div>
         @else
             <div class="form-group mt-5">

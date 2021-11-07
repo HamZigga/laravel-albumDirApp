@@ -9,8 +9,8 @@
         <div class="col-8" >
             <p><small>{{ $data->created_at }}</small></p>
             @auth
-                <a href="{{ route('albumSpecific-update', $data->id) }}"><button class="btn btn-primary">Редактировать</button></a>
-                <a href="{{ route('albumSpecific-delete', $data->id) }}"><button class="btn btn-danger">Удалить</button></a>
+                <a href="{{ route('artistSpecific-update', $data->id) }}"><button class="btn btn-primary">Редактировать</button></a>
+                <a href="{{ route('artistSpecific-delete', $data->id) }}"><button class="btn btn-danger">Удалить</button></a>
             @endauth
         </div>
     </div>
