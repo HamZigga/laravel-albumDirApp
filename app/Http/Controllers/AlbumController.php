@@ -19,14 +19,7 @@ class AlbumController extends Controller
 
     public function store(AlbumRequest $request)
     {
-
-        if (is_string($request->img_api)) {
-            $imgSource = $this->imageSave('albums', $request->img_api);
-        } else if (file_exists($request->file('img'))) {
-            $imgSource = $request->file('img')->store('albums', 'public');
-        } else {
-            $imgSource = 'stockAlbumImage.jpg';
-        }
+        $imgSource  = $this->imageSave($request, 'albums');
 
         Album::create([
             'user_id' => auth()->user()->id,
@@ -39,15 +32,41 @@ class AlbumController extends Controller
         return redirect()->route('home')->with('success', "Альбом был добавлен");
     }
 
-    public function imageSave($dir, $imgSource)
+    public function imageSave(AlbumRequest $request ,$dir)
     {
-        $fileContent = file_get_contents($imgSource);
-        $path_info = pathinfo(basename($imgSource));
-        $ext = $path_info['extension'];
+        if (is_string($request->img_api)) {
+            $fileContent = file_get_contents($request->img_api);
+            $path_info = pathinfo(basename($request->img_api));
+            $ext = $path_info['extension'];
+        } else if (file_exists($request->file('img'))) {
+
+            if ($request->hidden_img != 'stockAlbumImage.jpg'){
+                Storage::disk('public')->delete($request->hidden_img);
+            }
+
+            $fileContent = $request->file('img');
+            $ext = $fileContent->extension();
+        } else {
+            if (isset($request->hidden_img)){
+                return $request->hidden_img;
+            }
+
+            return 'stockAlbumImage.jpg';
+        }
+
         $filename = $dir . '/' . Str::random(40) . '.' . $ext;
         $img = Image::make($fileContent)->encode($ext)->resize(300, 300);
         Storage::disk('public')->put($filename, $img);
         return $filename;
+
+
+//        $fileContent = file_get_contents($imgSource);
+//        $path_info = pathinfo(basename($imgSource));
+//        $ext = $path_info['extension'];
+//        $filename = $dir . '/' . Str::random(40) . '.' . $ext;
+//        $img = Image::make($fileContent)->encode($ext)->resize(300, 300);
+//        Storage::disk('public')->put($filename, $img);
+//        return $filename;
     }
 
     public function search(Request $request)
@@ -68,16 +87,7 @@ class AlbumController extends Controller
 
     public function update($id, AlbumRequest $request)
     {
-        $previousImg = $request->hidden_img;
-        if (file_exists($request->file('img'))) {
-
-            if ($previousImg != 'stockAlbumImage.jpg') {
-                Storage::disk('public')->delete($previousImg);
-            }
-            $imgSource = $request->file('img')->store('albums', 'public');
-        } else {
-            $imgSource = $previousImg;
-        }
+        $imgSource = $this->imageSave($request, 'albums');
         Album::findOrFail($id)->update([
             'user_id' => auth()->user()->id,
             'artist' => $request->input('artist'),

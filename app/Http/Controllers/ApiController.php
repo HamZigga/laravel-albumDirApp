@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Artist;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\ClientException;
 use App\Models\Album;
 use Illuminate\Http\Request;
@@ -16,6 +17,8 @@ class ApiController extends Controller
 
     public function getAlbumApiData(Request $request)
     {
+        $route = 'albumFind';
+        $message = 'Неверно введен Исполнитель или Альбом';
         $patternForDeleteLinks = '/<a([\s\S]+)?>([\s\S]+)?<\/a>/i';
 
         $albumCopy = new Album();
@@ -24,14 +27,12 @@ class ApiController extends Controller
         $artist = strtolower(strip_tags($request->input('artist')));
         $album = strtolower(strip_tags($request->input('album')));
 
-        $client = new Client();
-        try {
-            $client = $client->request('POST', 'https://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=' . env('API_KEY_LASTFM') . '&artist=' . $artist . '&album=' . $album);
-        } catch (ClientException  $exception) {
-            return redirect()->route('albumFind')->with('errorMessage', "Неверно введен Исполнитель или Альбом");
-        }
+        $url = 'https://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=' . env('API_KEY_LASTFM') . '&artist=' . $artist . '&album=' . $album;
 
-        $result = new SimpleXMLElement($client->getBody());
+        $result = $this->getApiData($url);
+        if (!$result){
+            return redirect()->route($route)->with('errorMessage', $message);
+        }
 
         $artist = strval($result->album[0]->artist);
         $album = strval($result->album[0]->name);
@@ -56,22 +57,21 @@ class ApiController extends Controller
 
 
     // Всегда получает одинаковую картинку из-за изменения правил пользования api last.fm
-
     public function getArtistApiData(Request $request)
     {
+        $route = 'artistFind';
+        $message = 'Исполнитель не найден';
         $ArtistCopy = new Artist();
         $ArtistCopy->user_id = auth()->user()->id;
 
         $artist = strip_tags($request->input('artist'));
 
-        $client = new Client();
-        try {
-            $client = $client->request('POST', 'http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=' . $artist . '&api_key=' . env('API_KEY_LASTFM'));
-        } catch (ClientException  $exception) {
-            return redirect()->route('artistFind')->with('errorMessage', "Исполнитель не найден");
-        }
+        $url = 'http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=' . $artist . '&api_key=' . env('API_KEY_LASTFM');
 
-        $result = new SimpleXMLElement($client->getBody());
+        $result = $this->getApiData($url);
+        if (!$result){
+            return redirect()->route($route)->with('errorMessage', $message);
+        }
 
         $artist = strval($result->artist[0]->name);
 
@@ -84,6 +84,23 @@ class ApiController extends Controller
         $ArtistCopy->img = $image;
 
         return view('artistCreate', ['data' => $ArtistCopy]);
+    }
+
+    public function getApiData(string $url)
+    {
+        $client = new Client();
+        try {
+            $client = $client->request('POST', $url);
+        } catch (ClientException  $exception) {
+            return false;
+        }
+
+        $result = new SimpleXMLElement($client->getBody());
+
+        if ($result['status'] == 'failed'){
+            return false;
+        }
+        return $result;
     }
 
 }
