@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Artist;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\ClientException;
 use App\Models\Album;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 use SimpleXMLElement;
 
@@ -24,8 +22,8 @@ class ApiController extends Controller
         $albumCopy = new Album();
         $albumCopy->user_id = auth()->user()->id;
 
-        $artist = strtolower(strip_tags($request->input('artist')));
-        $album = strtolower(strip_tags($request->input('album')));
+        $artist = strtolower(strip_tags($request->artist));
+        $album = strtolower(strip_tags($request->album));
 
         $url = 'https://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=' . env('API_KEY_LASTFM') . '&artist=' . $artist . '&album=' . $album;
 
@@ -54,7 +52,6 @@ class ApiController extends Controller
 
         return view('albumCreate', ['data' => $albumCopy]);
     }
-
 
     // Всегда получает одинаковую картинку из-за изменения правил пользования api last.fm
     public function getArtistApiData(Request $request)

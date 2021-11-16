@@ -9,13 +9,14 @@
             @if (Route::has('login'))
                     <div class="sm:flex sm:items-center sm:ml-6">
                         <a class="pr-5" href="{{ route('albumCreate') }}">Создать Альбом</a>
-                    @auth
-                        @else
-                            <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Логин</a>
+                        <a class="pr-5" href="{{ route('artistCreate') }}">Создать Исполнителя</a>
+                        @auth
+                            @else
+                                <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Логин</a>
 
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="ml-4 text-sm text-gray-700 dark:text-gray-500 underline">Регистрация</a>
-                            @endif
+                                @if (Route::has('register'))
+                                    <a href="{{ route('register') }}" class="ml-4 text-sm text-gray-700 dark:text-gray-500 underline">Регистрация</a>
+                                @endif
                         @endauth
                     </div>
             @endif

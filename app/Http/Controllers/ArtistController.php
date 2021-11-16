@@ -15,28 +15,38 @@ class ArtistController extends Controller
     public function store(ArtistRequest $request)
     {
 
-        if (is_string($request->img_api)) {
-            $imgSource = $this->imageSave('artists', $request->img_api);
-        } else if (file_exists($request->file('img'))) {
-            $imgSource = $request->file('img')->store('artists', 'public');
-        } else {
-            $imgSource = 'stockAlbumImage.jpg';
-        }
-
         Artist::create([
             'user_id' => auth()->user()->id,
-            'artist' => $request->input('artist'),
-            'img' => $imgSource,
+            'artist' => $request->artist,
+            'img' => $this->imageSave($request, 'artists'),
         ]);
 
         return redirect()->route('artistList')->with('success', "Исполнитель был добавлен");
     }
 
-    public function imageSave($dir, $imgSource)
+    public function imageSave(ArtistRequest $request, $dir)
     {
-        $fileContent = file_get_contents($imgSource);
-        $path_info = pathinfo(basename($imgSource));
-        $ext = $path_info['extension'];
+        if (is_string($request->img_api)) {
+            $fileContent = file_get_contents($request->img_api);
+            $path_info = pathinfo(basename($request->img_api));
+            $ext = $path_info['extension'];
+        } else if (file_exists($request->file('img'))) {
+
+            if ($request->hidden_img != 'stockAlbumImage.jpg') {
+                Storage::disk('public')->delete($request->hidden_img);
+            }
+
+
+            $fileContent = $request->file('img');
+            $ext = $fileContent->extension();
+        } else {
+            if (isset($request->hidden_img)) {
+                return $request->hidden_img;
+            }
+
+            return 'stockAlbumImage.jpg';
+        }
+
         $filename = $dir . '/' . Str::random(40) . '.' . $ext;
         $img = Image::make($fileContent)->encode($ext)->resize(300, 300);
         Storage::disk('public')->put($filename, $img);
@@ -54,38 +64,29 @@ class ArtistController extends Controller
         return view('artistList', ['artists' => Artist::orderBy('id', 'desc')->paginate(5)]);
     }
 
-    public function edit($id)
+    public function edit($modelId)
     {
-        return view('artistUpdate', ['data' => Artist::findOrFail($id)]);
+        return view('artistUpdate', ['data' => Artist::findOrFail($modelId)]);
     }
 
-    public function update($id, ArtistRequest $request)
+    public function update($modelId, ArtistRequest $request)
     {
-        $previousImg = $request->hidden_img;
-        if (file_exists($request->file('img'))) {
-            if ($previousImg != 'stockAlbumImage.jpg') {
-                Storage::disk('public')->delete($previousImg);
-            }
-            $imgSource = $request->file('img')->store('artists', 'public');
-        } else {
-            $imgSource = $previousImg;
-        }
-        Artist::findOrFail($id)->update([
+        Artist::findOrFail($modelId)->update([
             'user_id' => auth()->user()->id,
-            'artist' => $request->input('artist'),
-            'img' => $imgSource,
+            'artist' => $request->artist,
+            'img' => $this->imageSave($request, 'artists'),
         ]);
 
-        return redirect()->route('artistList', $id)->with('success', "Исполнитель был обновлен");
+        return redirect()->route('artistList', $modelId)->with('success', "Исполнитель был обновлен");
     }
 
-    public function delete($id)
+    public function delete($modelId)
     {
-        $artistCopy = Artist::findOrFail($id);
+        $artistCopy = Artist::findOrFail($modelId);
         $artistCopy->delete();
         if ($artistCopy->img != 'stockAlbumImage.jpg') {
             Storage::disk('public')->delete($artistCopy->img);
         }
-        return redirect()->route('artistList', $id)->with('success', "Исполнитель был Удален");
+        return redirect()->route('artistList', $modelId)->with('success', "Исполнитель был Удален");
     }
 }
