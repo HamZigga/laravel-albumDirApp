@@ -1,0 +1,39 @@
+version: '3.3'
+
+services:
+    nginx:
+        build:
+            context: .
+            dockerfile: Docker/Nginx.DockerFile
+        ports:
+            - 8098:80
+        links:
+            -   fpm
+        volumes:
+            - ./:/var/www/albumMusicApp
+    fpm:
+        build:
+            context: .
+            dockerfile: Docker/Fpm.DockerFile
+        volumes:
+            -   ./:/var/www/albumMusicApp
+        links:
+            -   mysql
+
+    mysql:
+        image: mysql:5.7
+        ports:
+            -   33061:3306
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_DATABASE=AlbumService
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: phpmyadmin
+        environment:
+            - PMA_ARBITRARY=1
+            - PMA_HOST=mysql
+        restart: always
+        ports:
+            - 8081:80
